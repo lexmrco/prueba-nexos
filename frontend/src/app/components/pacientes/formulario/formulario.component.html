@@ -1,0 +1,145 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{title}}</h5>
+    <form #pacienteForm="ngForm"  (ngSubmit)="onSubmit(pacienteForm)">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="nombre">Nombres
+              <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text text-danger">
+              <div *ngIf="nombre.errors.required">
+                * Campo obligatorio
+              </div>
+            </div>
+            </label>
+            <input type="text" class="form-control"  placeholder="Nombres.." name="nombre" #nombre="ngModel" [(ngModel)]="paciente.nombre" required/>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="apellido">Apellidos
+              <div *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)" class="text text-danger">
+                <div *ngIf="apellido.errors.required">
+                  * Campo obligatorio
+                </div>
+              </div>
+            </label>
+            
+            <input type="text" class="form-control"  placeholder="Apellidos.." name="apellido" #apellido="ngModel" [(ngModel)]="paciente.apellido" required />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="seguroSocial">Número seguro social
+              <div *ngIf="seguroSocial.invalid && (seguroSocial.dirty || seguroSocial.touched)" class="text text-danger">
+                <div *ngIf="seguroSocial.errors.required">
+                  * Campo obligatorio
+                </div>
+              </div>
+            </label>
+            <input type="text" class="form-control"  placeholder="Número seguro social.." name="seguroSocial" #seguroSocial="ngModel" [(ngModel)]="paciente.seguroSocial" required/>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="codigoPostal">Código postal</label>
+            <input type="text" class="form-control"  placeholder="Código postal.." name="codigoPostal" #codigoPostal="ngModel" [(ngModel)]="paciente.codigoPostal" />
+          </div>
+        </div>
+        <div class="row">    
+          <div class="col-md-6 form-group">
+            <label for="telefono">Telefono</label>
+            <input type="text" class="form-control"  placeholder="Telefono.." name="Telefono" #telefono="ngModel" [(ngModel)]="paciente.telefono" />
+          </div>
+        </div>
+        <div class="alert alert-danger"  role="alert" *ngIf="error != ''">
+          {{error}}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="pacienteForm.invalid">Guardar</button>
+      </div>
+    </form>
+    <div *ngIf="crudAction === 'update'">
+      <h3>Doctores Asignados</h3>
+      <button type="button" class="btn btn-md btn-primary" (click)="openModal()">
+        <i class="material-icons">
+          note_add
+          </i> Asociar doctor
+      </button>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Nombres</th>
+            <th scope="col">Apellidos</th>
+            <th scope="col">Especialidad</th>
+            <th scope="col">Hospital</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of doctores">
+            <td >{{item.nombre}}</td>
+            <td>{{item.apellido}}</td>
+            <td>{{item.especialidad}}</td>
+            <td>{{item.hospital}}</td>
+            <td>
+              <button type="button" class="btn btn-sm btn-danger" (click)="confirmDeleteDoctor(item)"><i class="material-icons">
+                delete_forever
+                </i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+  <!-- Modal Asociar doctor -->
+  <div class="modal" tabindex="-1" [ngStyle]="{'display':display}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Agregar doctor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCloseHandled()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form #doctorForm="ngForm"  (ngSubmit)="onSubmitDoctor(doctorForm)">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="doctorId">Médico de cabecera</label>
+              <select class="form-control" name="doctorId" #doctorId="ngModel" [(ngModel)]="selectDoctorId" required>
+                <option [value]="item.value" *ngFor="let item of doctoresSelectList">{{item.text}}</option>
+              </select>               
+            </div>
+            <div class="alert alert-danger"  role="alert" *ngIf="error != ''">
+              {{modalError}}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onCloseHandled()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="doctorForm.invalid">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal" tabindex="-1" [ngStyle]="{'display':displayModal2}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Quitar doctor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCloseModal2()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+          <div class="modal-body">
+            <p>Está seguro que desea quitar de la lista el Doctor {{selectedDoctor.nombre}} {{selectedDoctor.apellido}}?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onCloseModal2()">Cancelar</button>
+            <button type="button" class="btn btn-danger" (click)="deleteDoctor()">Eliminar</button>
+          </div>
+      </div>
+    </div>
+  </div>
